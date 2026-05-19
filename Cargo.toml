@@ -6,7 +6,6 @@ members = [
     "crates/feat",
     "crates/infra",
     "crates/platform",
-    "crates/shared",
     "crates/ui",
     "crates/utils",
 ]
@@ -23,7 +22,7 @@ domain = { path = "crates/domain" }
 feat = { package = "feat", path = "crates/feat" }
 infra = { path = "crates/infra" }
 platform = { path = "crates/platform" }
-shared = { path = "crates/shared" }
 ui = { path = "crates/ui" }
 utils = { path = "crates/utils" }
 makepad-widgets = { git = "https://github.com/makepad/makepad.git", branch = "dev", features = ["maps"] }
+robius-open = { git = "https://github.com/project-robius/robius", branch = "main" }

@@ -61,10 +61,26 @@ echo "Bundle id:        $BUNDLE_ID"
 echo "Running:          cargo makepad ios --org=$ORG_NAME --app=$APP_NAME run-sim -p $BIN_NAME"
 echo
 
+# Step 0: terminate + uninstall any previous copy so the simulator's
+# LaunchServices doesn't reuse a cached bundle / stale Info.plist / stale
+# resources. Without this, a freshly-built app sometimes shows the previous
+# UI because launchd picks up the cached install.
+echo "Uninstalling any previous copy of $BUNDLE_ID ..."
+xcrun simctl terminate booted "$BUNDLE_ID" >/dev/null 2>&1 || true
+xcrun simctl uninstall booted "$BUNDLE_ID" >/dev/null 2>&1 || true
+
 # Step 1: build, install, and (best-effort) launch. We deliberately ignore the
 # exit status because cargo-makepad does not propagate a failed launch.
+#
+# IMPORTANT: unset CARGO_TARGET_DIR so cargo writes the build artifacts into
+# the project's `target/` dir, which is where `cargo makepad ios run-sim`
+# looks for the binary it bundles into the .app. If the env exports
+# CARGO_TARGET_DIR (e.g. /tmp/rust_tmp), cargo builds there, cargo-makepad
+# reads from `target/`, and the simulator ends up running a stale binary
+# or fails outright. Unset only for this subshell — leave the user's env
+# untouched.
 set +e
-cargo makepad ios --org="$ORG_NAME" --app="$APP_NAME" run-sim -p "$BIN_NAME"
+(unset CARGO_TARGET_DIR; cargo makepad ios --org="$ORG_NAME" --app="$APP_NAME" run-sim -p "$BIN_NAME")
 set -e
 
 # Step 2: terminate any running instance so we can relaunch cleanly.

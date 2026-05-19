@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+robius-open = { git = "https://github.com/project-robius/robius", branch = "main" }
+robius-use-makepad = "0.1.1"
 
 [target.'cfg(target_os = "ios")'.dependencies]
 objc2 = { version = "0.6.4", default-features = false, features = ["std"] }
