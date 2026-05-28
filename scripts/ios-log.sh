@@ -28,8 +28,10 @@ fi
 
 echo "Streaming logs for process '${PROCESS_NAME}' or app '${APP_NAME}'..."
 echo "Booted device: ${BOOTED_DEVICE}"
+echo "(predicate matches process == name OR processImagePath CONTAINS name — covers cases"
+echo " where the unified-log 'process' field gets clipped or differs from the bundle name)"
 echo
 
 exec xcrun simctl spawn booted log stream \
   --style compact \
-  --predicate "process == \"${PROCESS_NAME}\" OR process == \"${APP_NAME}\""
+  --predicate "process == \"${PROCESS_NAME}\" OR process == \"${APP_NAME}\" OR processImagePath CONTAINS \"${PROCESS_NAME}\" OR processImagePath CONTAINS \"${APP_NAME}\""

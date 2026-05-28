@@ -129,9 +129,26 @@ echo "Re-installing patched bundle so launchservicesd picks up new Info.plist ..
 xcrun simctl install booted "$APP_PATH"
 
 # Step 5: relaunch the patched app on the simulator.
+#
+# `simctl launch` propagates env vars to the launched app via the
+# `SIMCTL_CHILD_<NAME>` prefix (the prefix is stripped, the rest becomes a
+# normal env var inside the simulator process).
+#
+# If MAKEPAD_STUDIO is set (e.g. 127.0.0.1:8001), tell the app to connect to
+# the studio hub. The host's localhost is reachable from the simulator, so a
+# studio running on the Mac at that port will receive the websocket. When
+# unset, the app prints "studio websocket disabled: empty studio_http" and
+# runs normally — that's the default.
 echo
 echo "Relaunching $BUNDLE_ID ..."
-xcrun simctl launch booted "$BUNDLE_ID"
+if [[ -n "${MAKEPAD_STUDIO:-}" ]]; then
+  echo "  forwarding STUDIO=$MAKEPAD_STUDIO to the simulator process"
+  SIMCTL_CHILD_STUDIO="$MAKEPAD_STUDIO" \
+    xcrun simctl launch booted "$BUNDLE_ID"
+else
+  xcrun simctl launch booted "$BUNDLE_ID"
+fi
 
 echo
 echo "Done. Tail logs with: scripts/ios-log.sh"
+echo "Studio inspector:    scripts/studio.sh   (then re-run with MAKEPAD_STUDIO=127.0.0.1:8001 $0)"

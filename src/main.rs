@@ -250,6 +250,7 @@ impl MatchEvent for App {
             .finger_up(actions)
             .is_some()
         {
+            log!("nav: tap tab_around");
             self.switch_page(cx, ActiveTab::Around);
         }
         if self
@@ -258,6 +259,7 @@ impl MatchEvent for App {
             .finger_up(actions)
             .is_some()
         {
+            log!("nav: tap tab_discover");
             self.switch_page(cx, ActiveTab::Discover);
         }
         if self
@@ -266,9 +268,11 @@ impl MatchEvent for App {
             .finger_up(actions)
             .is_some()
         {
+            log!("nav: tap tab_chats");
             self.switch_page(cx, ActiveTab::Chats);
         }
         if self.ui.view(cx, ids!(tab_me)).finger_up(actions).is_some() {
+            log!("nav: tap tab_me");
             self.switch_page(cx, ActiveTab::Me);
         }
     }
@@ -286,6 +290,7 @@ impl AppMain for App {
         self.ui.handle_event(cx, event, &mut Scope::empty());
 
         if let Event::Startup = event {
+            log!("nav: startup, active={:?}", self.active);
             self.apply_active(cx);
         }
     }
@@ -293,6 +298,7 @@ impl AppMain for App {
 
 impl App {
     fn switch_page(&mut self, cx: &mut Cx, tab: ActiveTab) {
+        log!("nav: switch_page -> {:?}", tab);
         self.active = tab;
         let page_id = match tab {
             ActiveTab::Around => live_id!(page_around),
