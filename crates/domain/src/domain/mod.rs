@@ -3,6 +3,7 @@ pub mod catalog;
 pub mod content;
 pub mod location;
 pub mod merchant;
+pub mod messaging;
 pub mod order;
 pub mod session;
 pub mod user;

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "c_001",
+    "peer_name": "巷子口早餐铺",
+    "peer_emoji": "🥟",
+    "peer_role": "merchant",
+    "last_text": "好的,小笼留 8 个,大概几点到?",
+    "last_at": "2026-05-27T08:42:00",
+    "unread": 2
+  },
+  {
+    "id": "c_002",
+    "peer_name": "老李修家电",
+    "peer_emoji": "🔧",
+    "peer_role": "merchant",
+    "last_text": "明天上午十点上门,行不?",
+    "last_at": "2026-05-27T08:11:00",
+    "unread": 1
+  },
+  {
+    "id": "c_003",
+    "peer_name": "王阿姨",
+    "peer_emoji": "🧑",
+    "peer_role": "service_provider",
+    "last_text": "下周一上午可以,8 点半到。",
+    "last_at": "2026-05-26T21:05:00",
+    "unread": 0
+  },
+  {
+    "id": "c_004",
+    "peer_name": "邻居老张",
+    "peer_emoji": "👴",
+    "peer_role": "user",
+    "last_text": "南昌路桂花真不错,你也去看看。",
+    "last_at": "2026-05-26T18:20:00",
+    "unread": 0
+  },
+  {
+    "id": "c_005",
+    "peer_name": "城南瑜伽馆",
+    "peer_emoji": "🧘",
+    "peer_role": "merchant",
+    "last_text": "周六的快闪还有 3 个名额。",
+    "last_at": "2026-05-25T13:00:00",
+    "unread": 0
+  }
+]

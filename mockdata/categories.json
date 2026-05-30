@@ -1,0 +1,10 @@
+[
+  { "id": "all",      "label": "全部", "emoji": "🧭" },
+  { "id": "food",     "label": "吃喝", "emoji": "🍜" },
+  { "id": "service",  "label": "服务", "emoji": "🛠" },
+  { "id": "retail",   "label": "购物", "emoji": "🛍" },
+  { "id": "sport",    "label": "运动", "emoji": "🏃" },
+  { "id": "event",    "label": "活动", "emoji": "🎪" },
+  { "id": "job",      "label": "找工", "emoji": "💼" },
+  { "id": "house",    "label": "找房", "emoji": "🏠" }
+]

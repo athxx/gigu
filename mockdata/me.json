@@ -1,0 +1,15 @@
+{
+  "id": "u_1001",
+  "nickname": "Athan",
+  "avatar_emoji": "🦊",
+  "city": "上海",
+  "role": "user",
+  "available_roles": ["user", "merchant", "service_provider"],
+  "verified": true,
+  "credit_score": 86,
+  "stats": {
+    "favorites": 12,
+    "published": 3,
+    "following": 24
+  }
+}

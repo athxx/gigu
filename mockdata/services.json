@@ -1,0 +1,72 @@
+[
+  {
+    "id": "s_001",
+    "title": "钟点工(2 小时起)",
+    "category": "家政",
+    "provider_name": "王阿姨",
+    "verified": true,
+    "rating": 4.9,
+    "price_from": 80.0,
+    "service_mode": "上门",
+    "distance_m": 760,
+    "cover_emoji": "🧹",
+    "tags": ["家政", "可日结"],
+    "intro": "10 年家政经验,黄浦+静安区域两小时内可到。"
+  },
+  {
+    "id": "s_002",
+    "title": "周末搬家(小型)",
+    "category": "搬家",
+    "provider_name": "城南货拉拉车队",
+    "verified": true,
+    "rating": 4.7,
+    "price_from": 200.0,
+    "service_mode": "上门",
+    "distance_m": 1820,
+    "cover_emoji": "🚚",
+    "tags": ["搬家", "周末"],
+    "intro": "单人单车,适合一居室搬家,免费提供绳带。"
+  },
+  {
+    "id": "s_003",
+    "title": "宠物代遛(每次 30 分钟)",
+    "category": "宠物",
+    "provider_name": "小张",
+    "verified": false,
+    "rating": 4.5,
+    "price_from": 35.0,
+    "service_mode": "上门",
+    "distance_m": 410,
+    "cover_emoji": "🐕",
+    "tags": ["宠物", "晚高峰可"],
+    "intro": "本人养犬两只,工作日 18:30 之后均可。"
+  },
+  {
+    "id": "s_004",
+    "title": "电脑上门维修",
+    "category": "维修",
+    "provider_name": "技术宅老周",
+    "verified": true,
+    "rating": 4.8,
+    "price_from": 150.0,
+    "service_mode": "上门",
+    "distance_m": 1100,
+    "cover_emoji": "💻",
+    "tags": ["维修", "数码"],
+    "intro": "Mac / Windows 通用,系统重装、硬件更换、数据恢复。"
+  },
+  {
+    "id": "s_005",
+    "title": "家庭摄影 1 小时",
+    "category": "摄影",
+    "provider_name": "Lens 工作室",
+    "verified": true,
+    "rating": 4.9,
+    "price_from": 480.0,
+    "service_mode": "线下",
+    "distance_m": 2300,
+    "cover_emoji": "📷",
+    "tags": ["摄影", "周末档紧"],
+    "intro": "包含修图 10 张,室外或室内场景皆可。"
+  }
+]

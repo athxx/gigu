@@ -2,6 +2,11 @@
 
 pub use makepad_widgets;
 
+use feat::pages::{
+    around::AroundPageWidgetRefExt, chats::ChatsPageWidgetRefExt,
+    detail::DetailOverlayWidgetRefExt, discover::DiscoverPageWidgetRefExt,
+    me::MePageWidgetRefExt,
+};
 use makepad_widgets::*;
 
 app_main!(App);
@@ -42,30 +47,10 @@ script_mod! {
                         height: Fill
                         active_page: @page_around
 
-                        page_around := View{
-                            width: Fill
-                            height: Fill
-                            draw_bg.color: PAGE_BG
-                            show_bg: true
-                        }
-                        page_discover := View{
-                            width: Fill
-                            height: Fill
-                            draw_bg.color: PAGE_BG
-                            show_bg: true
-                        }
-                        page_chats := View{
-                            width: Fill
-                            height: Fill
-                            draw_bg.color: PAGE_BG
-                            show_bg: true
-                        }
-                        page_me := View{
-                            width: Fill
-                            height: Fill
-                            draw_bg.color: PAGE_BG
-                            show_bg: true
-                        }
+                        page_around := AroundPage{}
+                        page_discover := DiscoverPage{}
+                        page_chats := ChatsPage{}
+                        page_me := MePage{}
                     }
 
                     bottom_nav := BottomNavBar{
@@ -214,6 +199,12 @@ script_mod! {
                             }
                         }
                     }
+
+                    detail_overlay := DetailOverlay{
+                        abs_pos: vec2(0, 0)
+                        width: Fill
+                        height: Fill
+                    }
                 }
             }
         }
@@ -275,6 +266,37 @@ impl MatchEvent for App {
             log!("nav: tap tab_me");
             self.switch_page(cx, ActiveTab::Me);
         }
+
+        let mut detail_changed = false;
+        let around = self.ui.around_page(cx, ids!(page_around));
+        if let Some(p) = around.borrow_mut() {
+            if p.handle_actions(cx, actions) {
+                detail_changed = true;
+            }
+        }
+        let discover = self.ui.discover_page(cx, ids!(page_discover));
+        if let Some(mut p) = discover.borrow_mut() {
+            if p.handle_actions(cx, actions) {
+                detail_changed = true;
+            }
+        }
+        let chats = self.ui.chats_page(cx, ids!(page_chats));
+        if let Some(mut p) = chats.borrow_mut() {
+            p.handle_actions(cx, actions);
+        }
+        let me = self.ui.me_page(cx, ids!(page_me));
+        if let Some(mut p) = me.borrow_mut() {
+            p.handle_actions(cx, actions);
+        }
+        let overlay = self.ui.detail_overlay(cx, ids!(detail_overlay));
+        if let Some(mut o) = overlay.borrow_mut() {
+            if o.handle_actions(cx, actions) {
+                detail_changed = true;
+            }
+        }
+        if detail_changed {
+            self.ui.redraw(cx);
+        }
     }
 }
 
@@ -282,6 +304,7 @@ impl AppMain for App {
     fn script_mod(vm: &mut ScriptVm) -> ScriptValue {
         crate::makepad_widgets::script_mod(vm);
         ::ui::script_mod(vm);
+        ::feat::script_mod(vm);
         self::script_mod(vm)
     }
 

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "p_001",
+    "author": "小王",
+    "author_emoji": "🧑",
+    "author_role": "user",
+    "city": "上海",
+    "distance_m": 320,
+    "posted_at": "2026-05-27T08:14:00",
+    "topic": "本地求助",
+    "text": "永康路上谁家洗衣店周日营业?家里水管炸了一堆衣服得赶紧洗 😩",
+    "likes": 14,
+    "comments": 7,
+    "spread_layer": 1
+  },
+  {
+    "id": "p_002",
+    "author": "复兴中路咖啡角",
+    "author_emoji": "☕",
+    "author_role": "merchant",
+    "city": "上海",
+    "distance_m": 580,
+    "posted_at": "2026-05-27T07:30:00",
+    "topic": "今日特价",
+    "text": "本周豆已到位,手冲单品咖啡 38 元,两人同行第二杯半价。",
+    "likes": 42,
+    "comments": 11,
+    "spread_layer": 2
+  },
+  {
+    "id": "p_003",
+    "author": "城南瑜伽馆",
+    "author_emoji": "🧘",
+    "author_role": "merchant",
+    "city": "上海",
+    "distance_m": 980,
+    "posted_at": "2026-05-26T19:15:00",
+    "topic": "活动",
+    "text": "周六早 8 点公园瑜伽快闪,免费,带垫即可。报名 ↓",
+    "likes": 88,
+    "comments": 23,
+    "spread_layer": 3
+  },
+  {
+    "id": "p_004",
+    "author": "Lens 工作室",
+    "author_emoji": "📷",
+    "author_role": "service_provider",
+    "city": "上海",
+    "distance_m": 2300,
+    "posted_at": "2026-05-26T15:00:00",
+    "topic": "作品",
+    "text": "上周末市集人像合集,转发可领修图体验 1 张。",
+    "likes": 31,
+    "comments": 9,
+    "spread_layer": 1
+  },
+  {
+    "id": "p_005",
+    "author": "邻居老张",
+    "author_emoji": "👴",
+    "author_role": "user",
+    "city": "上海",
+    "distance_m": 150,
+    "posted_at": "2026-05-27T06:45:00",
+    "topic": "心情",
+    "text": "南昌路桂花开了,清晨遛弯路过,香得让人停下来。",
+    "likes": 23,
+    "comments": 4,
+    "spread_layer": 0
+  }
+]

@@ -5,3 +5,6 @@ edition = "2024"
 
 [dependencies]
 domain = { path = "../domain" }
+infra = { path = "../infra" }
+ui = { path = "../ui" }
+makepad-widgets = { git = "https://github.com/makepad/makepad.git", branch = "dev", features = ["maps"] }
