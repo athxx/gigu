@@ -4,12 +4,56 @@ pub use makepad_widgets;
 
 use feat::pages::{
     around::AroundPageWidgetRefExt, chats::ChatsPageWidgetRefExt,
-    detail::DetailOverlayWidgetRefExt, discover::DiscoverPageWidgetRefExt,
-    me::MePageWidgetRefExt,
+    detail::DetailOverlayWidgetRefExt, discover::DiscoverPageWidgetRefExt, me::MePageWidgetRefExt,
 };
 use makepad_widgets::*;
 
 app_main!(App);
+
+pub fn font_override_script_mod(vm: &mut ScriptVm) {
+    script_eval!(vm, {
+        use mod.text.*
+        use mod.res.*
+
+        mod.theme = mod.theme{
+            font_label: TextStyle{
+                font_family: FontFamily{
+                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                }
+                line_spacing: 1.2
+            }
+            font_regular: TextStyle{
+                font_family: FontFamily{
+                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                }
+                line_spacing: 1.2
+            }
+            font_bold: TextStyle{
+                font_family: FontFamily{
+                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                }
+                line_spacing: 1.2
+            }
+            font_italic: TextStyle{
+                font_family: FontFamily{
+                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                }
+                line_spacing: 1.2
+            }
+            font_bold_italic: TextStyle{
+                font_family: FontFamily{
+                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
+                }
+                line_spacing: 1.2
+            }
+        }
+    });
+}
 
 script_mod! {
     use mod.prelude.widgets.*
@@ -87,7 +131,7 @@ script_mod! {
                                 draw_text.text_style.font_size: 10.
                             }
                             label_around_active := Label{
-                                text: "Around"
+                                text: "周边"
                                 draw_text.color: NAV_LABEL_ACTIVE
                                 draw_text.text_style: theme.font_bold{font_size: 10.}
                                 visible: false
@@ -302,7 +346,9 @@ impl MatchEvent for App {
 
 impl AppMain for App {
     fn script_mod(vm: &mut ScriptVm) -> ScriptValue {
-        crate::makepad_widgets::script_mod(vm);
+        crate::makepad_widgets::theme_mod(vm);
+        crate::font_override_script_mod(vm);
+        crate::makepad_widgets::widgets_mod(vm);
         ::ui::script_mod(vm);
         ::feat::script_mod(vm);
         self::script_mod(vm)
