@@ -2,3 +2,12 @@
 .DS_Store
 .makepad
 *.log
+.idea/
+.vscode/
+
+
+*.sw?
+*.apk
+*.aab
+*.ipa
+*.zip

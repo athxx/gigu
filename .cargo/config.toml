@@ -1,0 +1,37 @@
+# Project-local overrides. The global ~/.cargo/config.toml enables sccache,
+# lld, and the cranelift codegen-backend, none of which are needed (or
+# installed) for the cargo-makepad iOS/Android build flow. Override them here.
+
+[build]
+rustc-wrapper = ""
+
+# Override the user's global ~/.cargo/config.toml.
+# - panic=abort + android prebuilt std (panic=unwind) fails to link → unwind.
+# - lto=thin + cargo-makepad's `-C prefer-dynamic` for cdylib is incompatible → off.
+[profile.release]
+panic = "unwind"
+lto = false
+
+[target.aarch64-apple-darwin]
+rustflags = []
+
+[target.aarch64-apple-ios]
+rustflags = []
+
+[target.aarch64-apple-ios-sim]
+rustflags = []
+
+[target.x86_64-apple-ios]
+rustflags = []
+
+[target.aarch64-linux-android]
+rustflags = []
+
+[target.armv7-linux-androideabi]
+rustflags = []
+
+[target.x86_64-linux-android]
+rustflags = []
+
+[target.i686-linux-android]
+rustflags = []

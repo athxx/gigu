@@ -1,0 +1,21 @@
+[package]
+name = "gigu"
+version = "0.1.0"
+edition = "2024"
+
+# makepad-platform's android backend links libamidi (NDK API 29+).
+# cargo-makepad's default min-sdk is 26, which doesn't ship libamidi —
+# raise to 29 so the linker finds it.
+[package.metadata.makepad.android]
+min_sdk_version = 29
+
+[dependencies]
+app = { path = "../app" }
+domain = { path = "../domain" }
+feat = { package = "feat", path = "../feat" }
+infra = { path = "../infra" }
+platform = { path = "../platform" }
+ui = { path = "../ui" }
+utils = { path = "../utils" }
+makepad-widgets = { git = "https://github.com/makepad/makepad.git", branch = "dev", features = ["maps"] }
+robius-open = { git = "https://github.com/project-robius/robius", branch = "main" }
