@@ -33,7 +33,7 @@ OUT_DIR="$ROOT_DIR/dist/ios"
 STAGE_DIR="$ROOT_DIR/target/ipa-stage"
 
 DEVICE_TARGET="aarch64-apple-ios"
-SIM_APP="$ROOT_DIR/target/makepad-ios-app/aarch64-apple-ios-sim/release/${APP}.app"
+SIM_APP="$ROOT_DIR/target/apple/makepad-apple-app/aarch64-apple-ios-sim/release/${APP}.app"
 DEVICE_BIN="$ROOT_DIR/target/${DEVICE_TARGET}/release/${BIN_NAME}"
 IPA_PATH="$OUT_DIR/${BIN_NAME}.ipa"
 
@@ -63,10 +63,13 @@ if [[ ! -d "$SIM_APP" ]]; then
 fi
 
 # --- 2. build the device binary ---------------------------------------------
+# Force the workspace target/ even when the user has a global
+# `[build] target-dir = ...` override in ~/.cargo/config.toml — otherwise the
+# binary lands somewhere we can't predict.
 echo "==> iOS: building device binary ($DEVICE_TARGET, release)"
 (unset CARGO_TARGET_DIR; \
   IPHONEOS_DEPLOYMENT_TARGET=15.0 AWS_LC_SYS_CMAKE_BUILDER=1 \
-  cargo build --target="$DEVICE_TARGET" --release -p "$BIN_NAME")
+  cargo build --target="$DEVICE_TARGET" --target-dir="$ROOT_DIR/target" --release -p "$BIN_NAME")
 
 if [[ ! -f "$DEVICE_BIN" ]]; then
   echo "error: device binary not found at $DEVICE_BIN" >&2
