@@ -4,10 +4,16 @@
 *.log
 .idea/
 .vscode/
-
+dist/*
+!dist/.gitkeep
 
 *.sw?
 *.apk
 *.aab
 *.ipa
 *.zip
+
+# signing material — never commit
+/signature/
+*.jks
+*.keystore

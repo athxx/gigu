@@ -24,12 +24,45 @@ set -euo pipefail
 MAKEPAD_ANDROID_SDK="/Users/x/code/makepad/tools/cargo_makepad/android_33_macos_aarch64"
 FORMAT="apk" # apk, aab
 
-# --- AAB signing (only used when FORMAT=aab; leave empty to fall back to the
-#     bundled debug.keystore — Play Store will reject an AAB signed with it) ---
-ANDROID_KEYSTORE="${ANDROID_KEYSTORE:-}"            # absolute path to .jks/.keystore (Play Store upload key)
-ANDROID_KEYSTORE_PASS="${ANDROID_KEYSTORE_PASS:-}"  # store password
-ANDROID_KEY_ALIAS="${ANDROID_KEY_ALIAS:-}"          # optional; auto-discovered from <keystore>.makepad sidecar
-ANDROID_KEY_PASS="${ANDROID_KEY_PASS:-}"            # defaults to ANDROID_KEYSTORE_PASS if empty
+# --- Release signing. Keystore + credentials live in signature/android/, which
+#     is .gitignored. Credentials are parsed from jks_password.txt (shipped
+#     alongside every rotated jks) so rotating the key only requires swapping
+#     the two files — no script edit. Env vars still override for CI. ---
+SIGNATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/signature/android"
+ANDROID_KEYSTORE="${ANDROID_KEYSTORE:-$(ls "$SIGNATURE_DIR"/*.jks 2>/dev/null | head -1)}"
+ANDROID_PASSWORD_FILE="${ANDROID_PASSWORD_FILE:-$SIGNATURE_DIR/jks_password.txt}"
+
+# Pull credentials out of jks_password.txt. Lines look like
+#   "store pass<中文>: N9AHeGSG"
+#   "key alias<中文>: ym061734"
+#   "key pass<中文>: N9AHeGSG"
+# (the file is GBK with Chinese annotations between the English label and the
+# colon). We anchor on the leading English label only, then take everything
+# after the LAST colon on the line, trimming whitespace + CR.
+parse_pwd_field() {
+  local key="$1" file="$2"
+  # LC_ALL=C: file is GBK; force byte-level so BSD sed doesn't choke on
+  # non-UTF-8 bytes ("illegal byte sequence").
+  LC_ALL=C grep -i "^${key}" "$file" 2>/dev/null \
+    | head -1 \
+    | LC_ALL=C sed -E 's/.*:[[:space:]]*//; s/[[:space:]\r]+$//'
+}
+if [[ -z "${ANDROID_KEYSTORE_PASS:-}" || -z "${ANDROID_KEY_ALIAS:-}" || -z "${ANDROID_KEY_PASS:-}" ]]; then
+  if [[ ! -f "$ANDROID_PASSWORD_FILE" ]]; then
+    echo "error: credential file not found: $ANDROID_PASSWORD_FILE" >&2
+    echo "       expected lines: 'store pass: ...', 'key alias: ...', 'key pass: ...'" >&2
+    echo "       (or set ANDROID_KEYSTORE_PASS / ANDROID_KEY_ALIAS / ANDROID_KEY_PASS)" >&2
+    exit 1
+  fi
+  ANDROID_KEYSTORE_PASS="${ANDROID_KEYSTORE_PASS:-$(parse_pwd_field "store pass" "$ANDROID_PASSWORD_FILE")}"
+  ANDROID_KEY_ALIAS="${ANDROID_KEY_ALIAS:-$(parse_pwd_field "key alias"  "$ANDROID_PASSWORD_FILE")}"
+  ANDROID_KEY_PASS="${ANDROID_KEY_PASS:-$(parse_pwd_field "key pass"   "$ANDROID_PASSWORD_FILE")}"
+fi
+if [[ -z "$ANDROID_KEYSTORE_PASS" || -z "$ANDROID_KEY_ALIAS" || -z "$ANDROID_KEY_PASS" ]]; then
+  echo "error: failed to resolve signing credentials from $ANDROID_PASSWORD_FILE" >&2
+  echo "       expected lines: 'store pass: ...', 'key alias: ...', 'key pass: ...'" >&2
+  exit 1
+fi
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
@@ -101,8 +134,25 @@ if [[ ! -d "$SDK_PATH" ]]; then
   exit 1
 fi
 
+# Verify the keystore exists before building anything — both APK and AAB paths
+# need it now, and a build that succeeds but can't be signed wastes minutes.
+if [[ ! -f "$ANDROID_KEYSTORE" ]]; then
+  echo "error: keystore not found at: $ANDROID_KEYSTORE" >&2
+  echo "       set ANDROID_KEYSTORE to a valid .jks/.keystore path" >&2
+  exit 1
+fi
+
 echo "==> Android: building release $FORMAT (bin=$BIN_NAME, abi=$ABI, pkg=$PKG)"
+echo "    signing: $ANDROID_KEYSTORE (alias=$ANDROID_KEY_ALIAS)"
 mkdir -p "$OUT_DIR"
+
+# Shared keystore args for cargo-makepad's AAB path.
+KEYSTORE_ARGS=(
+  --keystore="$ANDROID_KEYSTORE"
+  --keystore-pass="$ANDROID_KEYSTORE_PASS"
+  --keystore-key-alias="$ANDROID_KEY_ALIAS"
+  --keystore-key-pass="$ANDROID_KEY_PASS"
+)
 
 if [[ "$FORMAT" == "apk" ]]; then
   (unset CARGO_TARGET_DIR; cargo makepad android \
@@ -112,7 +162,7 @@ if [[ "$FORMAT" == "apk" ]]; then
     --sdk-path="$SDK_PATH" \
     build -p "$BIN_NAME" --release)
 
-  # cargo-makepad places the apk under target/makepad-android-apk/.../<bin>.apk.
+  # cargo-makepad places the apk under target/android/makepad-android-apk/.../<bin>.apk.
   BUILT_ARTIFACT="$(find "$ROOT_DIR/target" -type f -name "*.apk" -newer "$ROOT_DIR/Cargo.toml" 2>/dev/null \
     | grep -v -E '/intermediates?/' \
     | head -1 || true)"
@@ -121,33 +171,31 @@ if [[ "$FORMAT" == "apk" ]]; then
     echo "error: APK build succeeded but no .apk found under target/" >&2
     exit 1
   fi
-else
-  # AAB. Pass keystore options through to cargo-makepad if all required vars
-  # are set; otherwise cargo-makepad falls back to its bundled debug.keystore
-  # (fine for local install but Play Store will reject — warn loudly).
-  KEYSTORE_ARGS=()
-  if [[ -n "$ANDROID_KEYSTORE" && -n "$ANDROID_KEYSTORE_PASS" ]]; then
-    if [[ ! -f "$ANDROID_KEYSTORE" ]]; then
-      echo "error: keystore file not found at: $ANDROID_KEYSTORE" >&2
-      exit 1
-    fi
-    KEYSTORE_ARGS+=(--keystore="$ANDROID_KEYSTORE" --keystore-pass="$ANDROID_KEYSTORE_PASS")
-    [[ -n "$ANDROID_KEY_ALIAS" ]] && KEYSTORE_ARGS+=(--keystore-key-alias="$ANDROID_KEY_ALIAS")
-    [[ -n "$ANDROID_KEY_PASS"  ]] && KEYSTORE_ARGS+=(--keystore-key-pass="$ANDROID_KEY_PASS")
-    echo "    AAB signing: $ANDROID_KEYSTORE"
-  else
-    echo "==> AAB: signing with bundled debug.keystore (Play Store will reject)"
-    echo "         set ANDROID_KEYSTORE + ANDROID_KEYSTORE_PASS at top of script for a real upload key"
-  fi
 
+  # cargo-makepad's `build` subcommand emits an UNSIGNED apk (only `build-aab`
+  # signs). Sign in-place with apksigner from the SDK build-tools so the apk
+  # is installable.
+  APKSIGNER_JAR="$SDK_PATH/build-tools/33.0.1/lib/apksigner.jar"
+  if [[ ! -f "$APKSIGNER_JAR" ]]; then
+    echo "error: apksigner.jar not found at $APKSIGNER_JAR" >&2
+    exit 1
+  fi
+  echo "==> APK: signing with $ANDROID_KEYSTORE"
+  java -jar "$APKSIGNER_JAR" sign \
+    --ks "$ANDROID_KEYSTORE" \
+    --ks-pass "pass:$ANDROID_KEYSTORE_PASS" \
+    --ks-key-alias "$ANDROID_KEY_ALIAS" \
+    --key-pass "pass:$ANDROID_KEY_PASS" \
+    "$BUILT_ARTIFACT"
+else
   # bash 3.2 (macOS) treats `"${arr[@]}"` on an empty array as unbound under
-  # set -u; expand only when populated.
+  # set -u; KEYSTORE_ARGS is always populated here so direct expansion is fine.
   (unset CARGO_TARGET_DIR; cargo makepad android \
     --abi="$ABI" \
     --package-name="$PKG" \
     --app-label="$LABEL" \
     --sdk-path="$SDK_PATH" \
-    ${KEYSTORE_ARGS[@]+"${KEYSTORE_ARGS[@]}"} \
+    "${KEYSTORE_ARGS[@]}" \
     build-aab -p "$BIN_NAME" --release)
 
   # cargo-makepad writes the aab under target/android/makepad-android-aab/.../<label>.aab
