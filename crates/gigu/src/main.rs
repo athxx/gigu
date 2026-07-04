@@ -14,44 +14,6 @@ pub fn font_override_script_mod(vm: &mut ScriptVm) {
     script_eval!(vm, {
         use mod.text.*
         use mod.res.*
-
-        mod.theme = mod.theme{
-            font_label: TextStyle{
-                font_family: FontFamily{
-                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                }
-                line_spacing: 1.2
-            }
-            font_regular: TextStyle{
-                font_family: FontFamily{
-                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                }
-                line_spacing: 1.2
-            }
-            font_bold: TextStyle{
-                font_family: FontFamily{
-                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                }
-                line_spacing: 1.2
-            }
-            font_italic: TextStyle{
-                font_family: FontFamily{
-                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                }
-                line_spacing: 1.2
-            }
-            font_bold_italic: TextStyle{
-                font_family: FontFamily{
-                    latin := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                    chinese := FontMember{res: crate_resource("self:resources/OPPO.ttf") asc: 0.0 desc: 0.0}
-                }
-                line_spacing: 1.2
-            }
-        }
     });
 }
 

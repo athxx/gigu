@@ -17,3 +17,6 @@ dist/*
 /signature/
 *.jks
 *.keystore
+
+# toolchains
+android_*_sdk/

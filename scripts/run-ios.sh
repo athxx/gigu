@@ -2,7 +2,7 @@
 #
 # Build & run the gigu app on the booted iOS simulator via cargo-makepad.
 #
-# The installed `cargo-makepad` (v0.4.0) generates a minimal Info.plist that
+# The installed `cargo-makepad` generates a minimal Info.plist that
 # is missing the usage-description keys required by iOS when the app touches
 # camera / location / microphone APIs. That makes the freshly launched app
 # crash immediately with EXC_CRASH (SIGABRT) and a TCC termination reason:
@@ -13,7 +13,7 @@
 # To work around that without forcing a re-install of cargo-makepad from the
 # `dev` branch, this script:
 #
-#   1. Lets `cargo makepad ios run-sim` build & install the .app bundle on
+#   1. Lets `cargo makepad apple ios run-sim` build & install the .app bundle on
 #      the booted simulator (the launch that follows will crash; that's OK).
 #   2. Patches the installed bundle's Info.plist with the missing usage
 #      description keys.
@@ -58,7 +58,7 @@ fi
 
 echo "Booted simulator: $BOOTED"
 echo "Bundle id:        $BUNDLE_ID"
-echo "Running:          cargo makepad ios --org=$ORG_NAME --app=$APP_NAME run-sim -p $BIN_NAME"
+echo "Running:          cargo makepad apple ios --org=$ORG_NAME --app=$APP_NAME run-sim -p $BIN_NAME"
 echo
 
 # Step 0: terminate + uninstall any previous copy so the simulator's
@@ -80,7 +80,7 @@ xcrun simctl uninstall booted "$BUNDLE_ID" >/dev/null 2>&1 || true
 # or fails outright. Unset only for this subshell — leave the user's env
 # untouched.
 set +e
-(unset CARGO_TARGET_DIR; cargo makepad ios --org="$ORG_NAME" --app="$APP_NAME" run-sim -p "$BIN_NAME")
+(unset CARGO_TARGET_DIR; cargo makepad apple ios --org="$ORG_NAME" --app="$APP_NAME" run-sim -p "$BIN_NAME")
 set -e
 
 # Step 2: terminate any running instance so we can relaunch cleanly.
@@ -89,7 +89,17 @@ xcrun simctl terminate booted "$BUNDLE_ID" >/dev/null 2>&1 || true
 # Step 3: locate the installed bundle and patch Info.plist with the missing
 # usage description keys. `simctl get_app_container booted <bundle_id>` prints
 # the absolute path to the installed .app on the booted device.
-APP_PATH="$(xcrun simctl get_app_container booted "$BUNDLE_ID" 2>/dev/null || true)"
+#
+# `cargo makepad apple ios run-sim` installs *and* launches the app itself, then
+# exits. LaunchServices registers the freshly installed bundle asynchronously,
+# so get_app_container can briefly return empty right after run-sim returns.
+# Retry a few times before giving up.
+APP_PATH=""
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+  APP_PATH="$(xcrun simctl get_app_container booted "$BUNDLE_ID" 2>/dev/null || true)"
+  [[ -n "$APP_PATH" && -d "$APP_PATH" ]] && break
+  sleep 0.5
+done
 if [[ -z "$APP_PATH" || ! -d "$APP_PATH" ]]; then
   echo "error: could not locate installed bundle for $BUNDLE_ID on the simulator"
   echo "       run-sim above probably failed before installing the app."

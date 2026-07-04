@@ -33,7 +33,7 @@ script_mod! {
                 draw_text.text_style: theme.font_bold{font_size: 14.}
             }
             greeting_label := Label{
-                text: "附近的小店和邻居都在这"
+                text: "泰 สวัสดี / 天नमस्ते / 阿مرحبا / 韩안녕하세요/ 日こんにちは"
                 draw_text.color: TEXT_MUTED
                 draw_text.text_style.font_size: 11.
             }

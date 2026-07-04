@@ -17,5 +17,5 @@ infra = { path = "../infra" }
 platform = { path = "../platform" }
 ui = { path = "../ui" }
 utils = { path = "../utils" }
-makepad-widgets = { git = "https://github.com/makepad/makepad.git", branch = "dev", features = ["maps"] }
+makepad-widgets = { path = "../../../makepad/widgets", features = ["maps"] }
 robius-open = { git = "https://github.com/project-robius/robius", branch = "main" }

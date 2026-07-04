@@ -7,4 +7,4 @@ edition = "2024"
 domain = { path = "../domain" }
 infra = { path = "../infra" }
 ui = { path = "../ui" }
-makepad-widgets = { git = "https://github.com/makepad/makepad.git", branch = "dev", features = ["maps"] }
+makepad-widgets = { path = "../../../makepad/widgets", features = ["maps"] }
