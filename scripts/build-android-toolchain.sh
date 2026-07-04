@@ -13,6 +13,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+
 ABI="${ANDROID_ABI:-aarch64}"
 SDK_PATH="${MAKEPAD_ANDROID_SDK:-$ROOT_DIR/android_33_sdk}"
 

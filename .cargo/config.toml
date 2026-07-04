@@ -9,8 +9,13 @@ rustc-wrapper = ""
 # - panic=abort + android prebuilt std (panic=unwind) fails to link → unwind.
 # - lto=thin + cargo-makepad's `-C prefer-dynamic` for cdylib is incompatible → off.
 [profile.release]
-panic = "unwind"
-lto = false
+# panic = "unwind"
+# lto = false
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
 
 [target.aarch64-apple-darwin]
 rustflags = []

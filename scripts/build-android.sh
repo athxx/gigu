@@ -21,6 +21,7 @@
 
 set -euo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MAKEPAD_ANDROID_SDK="/Users/x/code/makepad/tools/cargo_makepad/android_33_macos_aarch64"
 FORMAT="apk" # apk, aab
 
